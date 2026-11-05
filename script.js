@@ -11,6 +11,42 @@
     yearEl.textContent = new Date().getFullYear();
   }
 
+  // Dynamic Circular Favicon (auto-updates if GitHub avatar changes)
+  const faviconLink = document.getElementById("faviconLink");
+  const avatarEl = document.getElementById("profileAvatar");
+  if (faviconLink && avatarEl) {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const size = 128;
+        const margin = 4;
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - margin, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, margin, margin, size - margin * 2, size - margin * 2);
+        ctx.restore();
+
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - margin, 0, Math.PI * 2);
+        ctx.strokeStyle = "#6366f1";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        faviconLink.href = canvas.toDataURL("image/png");
+      } catch (_) {
+        // Fallback remains static circular favicon.png
+      }
+    };
+    img.src = avatarEl.src;
+  }
+
   // 1. Theme Initialization & Toggle
   const savedTheme = localStorage.getItem("moaz_links_theme") || "dark";
   setTheme(savedTheme);
